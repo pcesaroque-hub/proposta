@@ -196,7 +196,7 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Vendas / Mês</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Vendas de Veículos Novos / Mês</label>
                     <span className="text-[10px] font-bold text-emerald-600 uppercase mb-1">(+ {formatCurrency(SALES_VOLUME_INCREMENT)} a cada 20 unids)</span>
                   </div>
                   <input 
