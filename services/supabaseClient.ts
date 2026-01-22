@@ -1,7 +1,4 @@
 
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Serviço de Supabase desativado para otimização do deploy
+// Caso necessite de backend no futuro, reinstale @supabase/supabase-js
+export const supabase = null;
