@@ -37,7 +37,7 @@ export default function App() {
   // Cálculo das taxas baseadas na inclusão ou não de DP
   const effectivePiso = BASE_PRICE + (data.hasDP ? DP_FEE : 0);
   
-  // Alterado de 0.8 (80%) para 0.6 (60%) conforme solicitado
+  // Honorário por filial (60% sobre o piso operacional)
   const branchUnitFee = effectivePiso * 0.6; 
   
   const cnpjUnitFee = effectivePiso;
@@ -94,8 +94,6 @@ export default function App() {
     
     try {
       const element = exportAreaRef.current;
-      
-      // Captura o elemento com html2canvas
       const canvas = await html2canvas(element, {
         scale: 2, 
         useCORS: true,
@@ -105,8 +103,6 @@ export default function App() {
       });
       
       const imgData = canvas.toDataURL('image/png');
-      
-      // Configura o PDF como A4 (210mm x 297mm)
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -115,16 +111,11 @@ export default function App() {
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      // Margens de 15mm para melhor visualização
       const margin = 15; 
-      
       const availableWidth = pdfWidth - (margin * 2);
       const availableHeight = pdfHeight - (margin * 2);
-
       const imgProps = pdf.getImageProperties(imgData);
       
-      // Calcula a escala para caber na página (contain) sem cortar nada
       const ratio = Math.min(
         availableWidth / imgProps.width,
         availableHeight / imgProps.height
@@ -132,13 +123,10 @@ export default function App() {
 
       const pdfImgWidth = imgProps.width * ratio;
       const pdfImgHeight = imgProps.height * ratio;
-
-      // Centraliza horizontalmente na página
       const x = margin + (availableWidth - pdfImgWidth) / 2;
       const y = margin; 
 
       pdf.addImage(imgData, 'PNG', x, y, pdfImgWidth, pdfImgHeight);
-      
       pdf.save(`proposta-consultoria-${new Date().getTime()}.pdf`);
     } catch (error) {
       console.error('Erro ao exportar PDF:', error);
@@ -151,7 +139,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f1f5f9] text-slate-900 font-sans p-4 md:p-8">
       <div className="max-w-6xl mx-auto" ref={exportAreaRef}>
-        {/* Header - Logo Upload */}
+        {/* Header */}
         <header className="mb-12 flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200/60">
           <div className="flex items-center gap-6">
             <input 
@@ -164,7 +152,6 @@ export default function App() {
             <div 
               onClick={() => fileInputRef.current?.click()}
               className="bg-slate-50 p-4 rounded-2xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group relative"
-              title="Clique para carregar sua logomarca"
             >
               {uploadedLogo ? (
                 <img src={uploadedLogo} alt="Logo Cliente" className="h-12 w-auto object-contain" />
@@ -333,16 +320,20 @@ export default function App() {
               </div>
             </div>
 
-            {/* Exclusões */}
+            {/* Informações Adicionais */}
             <div className="bg-slate-900 rounded-3xl p-8 shadow-xl border border-slate-800 relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                <div className="flex items-center gap-3 mb-6 relative z-10">
                  <div className="p-2 bg-slate-800 rounded-lg text-blue-400">
                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                  </div>
-                 <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Exclusões do Escopo</h3>
+                 <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Informações Adicionais</h3>
                </div>
                <ul className="space-y-4 relative z-10">
+                  <li className="flex items-start gap-3 text-white text-xs font-bold">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                    15% sobre as recuperações Tributárias do Diagnóstico
+                  </li>
                   {[
                     !data.includeSystemParametrization && "Não inclusas as parametrizações do setor financeiro",
                     !data.includeSystemParametrization && "Não inclusas as parametrizações do setor comercial",
@@ -454,7 +445,7 @@ export default function App() {
           </aside>
         </div>
 
-        {/* Footer com Sincronização de Logo */}
+        {/* Footer */}
         <footer className="mt-24 border-t border-slate-200 pt-16 pb-16 flex flex-col items-center">
            <div className="mb-8 opacity-40 grayscale pointer-events-none">
               {uploadedLogo ? (
